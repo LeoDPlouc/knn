@@ -1,12 +1,11 @@
-#Td réalisé en binome avec Tristan Lamouric
 from math import sqrt
 from matplotlib import pyplot as ppl
 
 def loadData(path):
     with open(path,"r") as fil:
-        return [l.replace("\n","").split(",") for l in fil]
+        return [l.replace("\n","").split(";") for l in fil]
 
-data = loadData("iris.data") #sepal length,sepal width, petal length, petal width
+data = loadData("data.csv") #Training dataset
 datat = data[0::2]
 dataa = data[1::2]
 k = 5
@@ -24,8 +23,8 @@ def knn():
     ppl.hist(res)
     ppl.show()
 
-eps = 0.2
-minPts = 2
+eps = 0.09
+minPts = 1
 
 def dbscan():
 
@@ -68,12 +67,15 @@ def dbscan():
         for p in c:
             res.append(int(p[4]==l))
 
+    print("Min voisin", minPts, "Epsilon", eps)
     print("Nb cluster", len(clust))
-    print("% nb cluster / nb data", len(clust)/len(data) * 100)
-    print("% bruit", len(res)/len(data) * 100)
+    print("Nb data", len(data))
+    print("% réussite cluster", res.count(1)/len(res) * 100)
+    print("% réussite totale",res.count(1)/len(data) *100)
+    print("% bruit",(1 - len(res)/len(data)) * 100)
     ppl.hist(res)
     ppl.show()
 
 if __name__ == "__main__":
-    knn()
+    #knn()
     dbscan()
