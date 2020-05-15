@@ -22,8 +22,8 @@ def knn(dataTest,dataApp):
     ppl.hist(res)
     ppl.show()
 
-eps = 0.5
-minPts = 1
+eps = 0.05
+minPts = 2
 
 def dbscan_Model(dataApp):
 
@@ -45,7 +45,6 @@ def dbscan_Model(dataApp):
         for i in range(4))) < eps]
 
 
-    c = 0
     clusters = list()
     clustered = list()
 
@@ -54,22 +53,22 @@ def dbscan_Model(dataApp):
             voisins = epsVoisin(p)
 
             if len(voisins) > minPts:
-                clusters.append(list())
-                etendreCluster(p, voisins, clusters[c])
-                c = c+1
+                cl = list()
+                etendreCluster(p, voisins, cl)
+                clusters.append(cl)
 
     clustLabeled = list()
     for cl in clusters:
         ls = [e[4] for e in cl]
         label = max(ls, key= lambda x: ls.count(x))
-        clustLabeled.append((cl,label))
+        clustLabeled.append([cl,label])
     
     return clustLabeled
 
 def dbscan_Stat(labeledPoints, originalData):
     res = list()
     for i in range(len(labeledPoints)):
-        res.append(int(labeledPoints[i][4] == originalData[i][4]))
+        res.append(int(labeledPoints[i][1] == originalData[i][4]))
 
     print("Min voisin", minPts, "Epsilon", eps)
     print("Nb learning data", len(originalData))
@@ -79,25 +78,31 @@ def dbscan_Stat(labeledPoints, originalData):
     ppl.show()
 
 def dbscan_Apply(clusters, data):
-    def NearestClusterLabel(p):
-        vects = [e[0] for e in clusters]
-        centres = None
-        nearest = min(centres, key = lambda x : sum(float(p[i]) - float(x[0][i])**2 for i in range(4)))
-        return nearest[1]
+    def gravityCentre(c):
+        l = c[1]
+        pts = c[0]
+        return [sum([float(p[j]) for p in pts])/len(pts) for j in range(4)], l
+
+    centres = [gravityCentre(c) for c in clusters]
+
+    
 
     labeledP = list()
     for p in data:
-        l = NearestClusterLabel(p)
-        labeledP.append(p[:] + [l])
+        nearestCluster = min(centres, key=lambda x : sum([(float(x[0][i])-float(p[i]))**2 for i in range(4)]))
+        labeledP.append([p,nearestCluster[1]])
+
+    return labeledP
 
 
 if __name__ == "__main__":
     data = loadData("data.csv") #Training dataset
     shuffle(data)
-    datat = data[0::2][0:4]
-    dataa = data[1::2]
 
-    clusters = dbscan_Model(dataa)
+    clusters = dbscan_Model(data)
+    results = dbscan_Apply(clusters, data)
+    dbscan_Stat(results, data)
 
     data = loadData("preTest.csv")
-    shuffle(data)
+    results = dbscan_Apply(clusters, data)
+    dbscan_Stat(results, data)
