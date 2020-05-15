@@ -6,6 +6,18 @@ def loadData(path):
     with open(path,"r") as fil:
         return [l.replace("\n","").split(";") for l in fil]
 
+def saveData(path, data):
+    s = list()
+    for d in data:
+        a = d[0][:]
+        a.append(d[1])
+        a.append("\n")
+        if(len(a) != 5):
+            print("")
+        a = ";".join(a)
+        s.append(a)
+    with open(path, "w") as fil:
+        fil.writelines(s)
 
 k = 6
 
@@ -22,7 +34,7 @@ def knn(dataTest,dataApp):
     ppl.hist(res)
     ppl.show()
 
-eps = 0.05
+eps = 0.04
 minPts = 2
 
 def dbscan_Model(dataApp):
@@ -106,3 +118,7 @@ if __name__ == "__main__":
     data = loadData("preTest.csv")
     results = dbscan_Apply(clusters, data)
     dbscan_Stat(results, data)
+
+    data = loadData("finalTest.csv")
+    results = dbscan_Apply(clusters, data)
+    saveData("test.csv",results)
