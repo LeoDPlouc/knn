@@ -7,16 +7,11 @@ def loadData(path):
     with open(path,"r") as fil:
         return [l.replace("\n","").split(";") for l in fil]
 
-#Sauvegarde les données dans un fichier au format "x1;x2;x3;x4;label\n"
+#Sauvegarde les données dans un fichier au format "label\n"
 def saveData(path, data):
     s = list()
     for d in data:
-        a = d[0][:]
-        a.append(d[1])
-        if(len(a) != 5):
-            print("")
-        a = ";".join(a)
-        s.append(a + "\n")
+        s.append(d[1] + "\n")
     with open(path, "w") as fil:
         fil.writelines(s)
 
