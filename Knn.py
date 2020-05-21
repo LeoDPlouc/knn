@@ -11,11 +11,10 @@ def saveData(path, data):
     for d in data:
         a = d[0][:]
         a.append(d[1])
-        a.append("\n")
         if(len(a) != 5):
             print("")
         a = ";".join(a)
-        s.append(a)
+        s.append(a + "\n")
     with open(path, "w") as fil:
         fil.writelines(s)
 
